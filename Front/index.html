@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Fuck le masque !</title>
+        <link rel="stylesheet" href="/assets/css/style.css">
+    </head>
+    <body>
+        <div class="card-container">
+            <div class="card">
+                <h2 id="percent_vaccin"></h2>
+                <p id="remaining_vaccin"></p>
+            </div>
+        </div>
+        <div class="card-container">
+            <div class="card">
+                <h3>1ère dose</h3>
+                <p id="first_dose"></p>
+                <p id="first_dose_today"></p>
+            </div>
+            <div class="card">
+                <h3>Vaccinés</h3>
+                <p id="vaccins"></p>
+                <p id="new_vaccins"></p>
+            </div>
+        </div>
+        <div class="horizontal">
+            <div class="chart-container">
+                <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="chart2"></canvas>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
+        <script src="/assets/js/app.js"></script>
+    </body>
+</html>
