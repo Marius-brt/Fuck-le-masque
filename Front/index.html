@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Fuck le masque !</title>
         <link rel="stylesheet" href="/assets/css/style.css">
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
     </head>
     <body>
         <div class="card-container">
@@ -16,15 +17,25 @@
         </div>
         <div class="card-container">
             <div class="card">
-                <h3>1ère dose</h3>
-                <p id="first_dose"></p>
-                <p id="first_dose_today"></p>
-            </div>
-            <div class="card">
+                <i class="fas fa-syringe" style="color: #689aeb; background-color: #e0ebfc;"></i>
                 <h3>Vaccinés</h3>
                 <p id="vaccins"></p>
                 <p id="new_vaccins"></p>
+                <p id="new_vaccins_variation"></p>
+                <div class="mini-chart">
+                    <canvas id="mini-vaccins"></canvas>
+                </div>
             </div>
+            <div class="card">
+                <i class="fas fa-bug" style="color: #689aeb; background-color: #e0ebfc;"></i>
+                <h3>1ère dose</h3>
+                <p id="first_dose"></p>
+                <p id="first_dose_today"></p>
+                <p id="first_dose_variation"></p>
+                <div class="mini-chart">
+                    <canvas id="mini-first-dose"></canvas>
+                </div>
+            </div>            
         </div>
         <div class="horizontal">
             <div class="chart-container">
@@ -34,6 +45,7 @@
                 <canvas id="chart2"></canvas>
             </div>
         </div>
+        <a href="https://vitemadose.covidtracker.fr/" target="_blank">Vite ma dose</a>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
         <script src="/assets/js/app.js"></script>
