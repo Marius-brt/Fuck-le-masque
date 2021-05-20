@@ -4,50 +4,216 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Fuck le masque !</title>
         <link rel="stylesheet" href="/assets/css/style.css">
         <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+        <title>F*ck Le Masque !</title>
+        <meta name="title" content="F*ck Le Masque">
+        <meta name="description" content="F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. ">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://fucklemasque.fr/">
+        <meta property="og:title" content="F*ck Le Masque">
+        <meta property="og:description" content="F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. ">
+        <meta property="og:image" content="https://fucklemasque.fr/assets/img/logo.png">
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://fucklemasque.fr/">
+        <meta property="twitter:title" content="F*ck Le Masque">
+        <meta property="twitter:description" content="F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. ">
+        <meta property="twitter:image" content="https://fucklemasque.fr/assets/img/logo.png">
     </head>
     <body>
-        <div class="card-container">
-            <div class="card">
-                <h2 id="percent_vaccin"></h2>
-                <p id="remaining_vaccin"></p>
+        <div class="topnav">
+            <div class="nav-container">
+                <i class="fas fa-arrow-left" id="close-btn" onclick="closeCard()" style="display: none;"></i>
+                <p>F*ck Le Masque !</p>
             </div>
         </div>
-        <div class="card-container">
-            <div class="card">
-                <i class="fas fa-syringe" style="color: #689aeb; background-color: #e0ebfc;"></i>
-                <h3>Vaccinés</h3>
-                <p id="vaccins"></p>
-                <p id="new_vaccins"></p>
-                <p id="new_vaccins_variation"></p>
-                <div class="mini-chart">
-                    <canvas id="mini-vaccins"></canvas>
+        <div class="panel" id="home" style="padding-top: 60px;">
+            <div class="horizontal">
+                <div id="home-panel">
+                    <h2 id="percent_vaccin"></h2>
+                    <p id="remaining_vaccin"></p>
+                </div>
+                <div class="btn-group" style="margin-bottom: 40px;">
+                    <button class="active" id="data-btn" onclick="showEstimations()">Données</button>
+                    <button id="estimations-btn" onclick="showData()">Prédictions</button>
+                </div>
+                <div class="grid" id="charts">
+                    <div class="card" onclick="showCard('vaccinated')">
+                        <i class="fas fa-syringe logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises.</span></i>
+                        </div>
+                        <p>Vaccinés</p>
+                        <h3 id="vaccins"></h3>
+                        <p id="vaccins_variation"></p>
+                        <div class="mini-chart">
+                            <canvas id="mini-vaccins"></canvas>
+                        </div>
+                    </div>
+                    <div class="card" onclick="showCard('first-dose')">
+                        <i class="fas fa-certificate logo" style="color: #34e265; background-color: #edfdf2;"></i>
+                        <p>Première dose</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins une dose.</span></i>
+                        </div>
+                        <h3 id="first_dose"></h3>
+                        <p id="first_dose_variation"></p>
+                        <div class="mini-chart">
+                            <canvas id="mini-first-dose"></canvas>
+                        </div>
+                    </div>                
+                    <div class="card" onclick="showCard('new-vaccinated')">
+                        <i class="fas fa-plus logo" style="color: #ff6032; background-color: #fff3ef;"></i>
+                        <p>Nouveaux Vaccinés</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Nombre de personnes ayant reçu toutes les doses de vaccin requises en 24h.</span></i>
+                        </div>
+                        <h3 id="new_vaccins"></h3>
+                        <p id="new_vaccins_variation"></p>
+                        <div class="mini-chart">
+                            <canvas id="mini-new-vaccins"></canvas>
+                        </div>
+                    </div>
+                    <div class="card" onclick="showCard('new-first-dose')">
+                        <i class="fas fa-bug logo" style="color: #53ccff; background-color: #f2fbff;"></i>
+                        <p>Nouvelles premières dose</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Nombre de personnes ayant reçu au moins une dose en 24h.</span></i>
+                        </div>
+                        <h3 id="first_dose_today"></h3>
+                        <p id="new_first_dose_variation"></p>
+                        <div class="mini-chart">
+                            <canvas id="mini-new-first-dose"></canvas>
+                        </div>
+                    </div>  
+                    <div class="card" onclick="showCard('deliveries')">
+                        <i class="fas fa-box logo" style="color: #fca7ff; background-color: #feecff;"></i>
+                        <p>Livraisons</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Livraisons passées ou officiellement prévues pour les prochaines semaines par type de vaccin.</span></i>
+                        </div>
+                        <h3 id="deliveries"></h3>
+                        <p id="deliveries_variation"></p>
+                        <div class="mini-chart">
+                            <canvas id="deliveries-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-compress-arrows-alt logo" style="color: #fdd06d; background-color: #fffaee;"></i>
+                        <p>Doses injectées</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Cumul des premières et secondes injections par type de vaccin.</span></i>
+                        </div>
+                        <div class="mini-chart" style="height: 220px !important;">
+                            <canvas id="injected-doses"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid" id="estimations" style="display: none;">
+                    <div class="card" onclick="showCard('vaccinated-estimation')">
+                        <i class="fas fa-syringe logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
+                        <p>Vaccinés prédiction</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Prédiction du nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises sur 4 mois. Cette prédiction s'ajuste de jour en jour.</span></i>
+                        </div>
+                        <h3 id="vaccins-pred"></h3>
+                        <div class="mini-chart">
+                            <canvas id="mini-vaccins-estimation"></canvas>
+                        </div>
+                    </div>
+                    <div class="card" onclick="showCard('first-dose-estimation')">
+                        <i class="fas fa-certificate logo" style="color: #34e265; background-color: #edfdf2;"></i>
+                        <p>Première dose prédiction</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Prédiction du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette prédiction s'ajuste de jour en jour.</span></i>
+                        </div>
+                        <h3 id="first-dose-pred"></h3>
+                        <div class="mini-chart">
+                            <canvas id="mini-first-dose-estimation"></canvas>
+                        </div>
+                    </div>   
                 </div>
             </div>
-            <div class="card">
-                <i class="fas fa-bug" style="color: #689aeb; background-color: #e0ebfc;"></i>
-                <h3>1ère dose</h3>
-                <p id="first_dose"></p>
-                <p id="first_dose_today"></p>
-                <p id="first_dose_variation"></p>
-                <div class="mini-chart">
-                    <canvas id="mini-first-dose"></canvas>
+            <div class="banner">
+                <h2>Vous souhaitez vous faire vacciner ?</h2>
+                <p>À l'heure actuelle, toutes les personnes résidant en France ne sont pas éligibles à la vaccination. Cela finira par arriver mais pour l'heure si vous souhaitez vous faire vacciner, vous pouvez tester votre éligibilité en cliquant sur le bouton ci-dessous.</p>
+                <a class="link-btn" href="https://www.gouvernement.fr/info-coronavirus/vaccins?xtor=SEC-3-GOO-[]-[511245726430]-S-[%2B%C3%A9ligibilit%C3%A9%20%2Bvaccination]" target="_blank"><span>📝</span>Tester votre élegibilité</a>
+            </div>
+            <div class="events">
+                <h2 class="md-title">Événements liés à la vaccination</h2>
+                <div class="btn-group" style="margin-bottom: 40px;">
+                    <button class="active" id="next-events-btn" onclick="showNextEvents()">Prochainement</button>
+                    <button id="all-events-btn" onclick="showAllEvents()">Tous</button>
                 </div>
+                <div class="grid" id="next-events"></div>
+                <div class="grid" id="all-events" style="display: none;"></div>
             </div>            
-        </div>
-        <div class="horizontal">
-            <div class="chart-container">
-                <canvas id="chart"></canvas>
+            <div class="banner">
+                <h2>Vous êtes éligible à la vaccination ?</h2>
+                <p>Vite ma Dose est un outil qui vous permet de trouver un rendez-vous de vaccination contre le Covid 19 au plus proche de chez vous et rapidement. Faciles et simples, nous vous recommandons vite ma Dose pour votre vaccination. Tous ensemble contre le Covid 💪</p>
+                <a href="https://vitemadose.covidtracker.fr/" target="_blank" class="link-btn"><span>💉</span>Vite Ma Dose</a>
             </div>
-            <div class="chart-container">
-                <canvas id="chart2"></canvas>
+            <div class="vaccins-allowed">
+                <h2 class="md-title">Vaccins autorisés en France</h2>
+                <div class="grid">
+                    <div class="vaccin-card">
+                        <h3><img draggable="false" role="img" class="emoji" alt="🇺🇸" src="https://s.w.org/images/core/emoji/13.0.1/svg/1f1fa-1f1f8.svg"><img draggable="false" role="img" class="emoji" alt="🇩🇪" src="https://s.w.org/images/core/emoji/13.0.1/svg/1f1e9-1f1ea.svg"> Pfizer-BioNTech</h3>
+                        <ul>
+                            <li>Type : ARN messager</li>
+                            <li>Doses à injecter : 2</li>
+                            <li>Efficacité annoncé : 94,5%</li>
+                            <li>Conservation : -70°C</li>
+                        </ul>
+                    </div>
+                    <div class="vaccin-card">
+                        <h3><img draggable="false" role="img" class="emoji" alt="🇺🇸" src="https://s.w.org/images/core/emoji/13.0.1/svg/1f1fa-1f1f8.svg"> Moderna</h3>
+                        <ul>
+                            <li>Type : ARN messager</li>
+                            <li>Doses à injecter : 2</li>
+                            <li>Efficacité annoncé : 94%</li>
+                            <li>Conservation : -20°C (6 mois), +5°C (1 mois)</li>
+                        </ul>
+                    </div>
+                    <div class="vaccin-card">
+                        <h3><img draggable="false" role="img" class="emoji" alt="🇬🇧" src="https://s.w.org/images/core/emoji/13.0.1/svg/1f1ec-1f1e7.svg"><img draggable="false" role="img" class="emoji" alt="🇸🇪" src="https://s.w.org/images/core/emoji/13.0.1/svg/1f1f8-1f1ea.svg"> AstraZeneca/Oxford</h3>
+                        <ul>
+                            <li>Type : Vecteur viral</li>
+                            <li>Doses à injecter : 2</li>
+                            <li>Efficacité annoncé : 60-70% (< 55 ans)</li>
+                            <li>Conservation : +5°C (6 mois)</li>
+                        </ul>
+                    </div>
+                    <div class="vaccin-card">
+                        <h3><img draggable="false" role="img" class="emoji" alt="🇺🇸" src="https://s.w.org/images/core/emoji/13.0.1/svg/1f1fa-1f1f8.svg"><img draggable="false" role="img" class="emoji" alt="🇧🇪" src="https://s.w.org/images/core/emoji/13.0.1/svg/1f1e7-1f1ea.svg"> Janssen J&amp;J</h3>
+                        <ul>
+                            <li>Type : Vecteur viral</li>
+                            <li>Doses à injecter : 1</li>
+                            <li>Efficacité annoncé : 66%</li>
+                            <li>Conservation : +5°C</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="banner">
+                <h2>À propos</h2>
+                <p>F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. Malgré le nom atypique du site, nous n'encourage personne à arrêter le port du masque, au contraire. Le masque est un des gestes barrières les plus efficaces contre le coronavirus. Nous attendons juste le moment où l'immunité collective sera atteinte pour ne plus à avoir à le porter.</p>
+                <img class="sm-logo" src="/assets/img/logo.png" alt="">
+                <h5 class="author">Created by <a target="_blank" href="https://www.instagram.com/marius.brt/">@marius.brt</a></h5>
             </div>
         </div>
-        <a href="https://vitemadose.covidtracker.fr/" target="_blank">Vite ma dose</a>
+        <div class="panel" id="card-full" style="display: none;">  
+            <div style="padding-top: 120px; width: 90%;">
+                <h1 id="card-full-title"></h1>
+                <p id="card-full-descr"></p>
+                <div class="chart-container">
+                    <canvas id="full-chart"></canvas>
+                </div>
+            </div>          
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/regression/2.0.1/regression.min.js" integrity="sha512-0k6FXllQktdobw8Nc8KQN2WtZrOuxpMn7jC2RKCF6LR7EdOhhrg3H5cBPxhs3CFzQVlO6ni1B9SDLUPhBs0Alg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.1/dist/chartjs-plugin-annotation.min.js"></script>
         <script src="/assets/js/app.js"></script>
     </body>
 </html>
