@@ -67,7 +67,11 @@ body {
 .topnav {
     position: absolute;
     z-index: 10;
-    background-color: #fff;
+    /*background-color: #fff;*/
+    background-image: url('/assets/img/nav-wallpaper2.gif');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     width: 100%;
 }
 
@@ -89,6 +93,8 @@ body {
 }
 
 .topnav p {
+    color: #fff;
+    mix-blend-mode: difference;
     font-weight: 700;
 }
 
