@@ -168,6 +168,7 @@ body {
     cursor: pointer;
     border-radius: 10px;
     padding: 20px;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 10px 50px;
     transition: 0.3s ease-in;
 }
 
@@ -200,6 +201,7 @@ body {
 }
 
 .home-panel .case {
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 10px 50px;
     position: relative;
     overflow: hidden;
     height: 200px;
@@ -272,7 +274,7 @@ body {
 }
 
 .card:hover {
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 10px 50px;
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 10px 50px;
     transition: 0.2s;
 }
 
@@ -570,4 +572,12 @@ body {
 
 #card-full-title p {
     margin-left: 15px;
+}
+
+#info-text {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    font-weight: 400;
+    font-size: 14px;
+    color: rgb(165, 165, 165);
 }

@@ -751,6 +751,7 @@ function closeCard() {
     $('#home').show()
     $('#card-full').hide()
     $('#close-btn').hide()
+    onResize()
 }
 
 function miniChart(chrt, data, chrtLabels, variation) {
