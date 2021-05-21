@@ -11,12 +11,12 @@
         <meta name="description" content="F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. ">
         <meta property="og:type" content="website">
         <meta property="og:url" content="https://fucklemasque.fr/">
-        <meta property="og:title" content="F*ck Le Masque">
+        <meta property="og:title" content="F*ck Le Masque !">
         <meta property="og:description" content="F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. ">
         <meta property="og:image" content="https://fucklemasque.fr/assets/img/logo.png">
         <meta property="twitter:card" content="summary_large_image">
         <meta property="twitter:url" content="https://fucklemasque.fr/">
-        <meta property="twitter:title" content="F*ck Le Masque">
+        <meta property="twitter:title" content="F*ck Le Masque !">
         <meta property="twitter:description" content="F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. ">
         <meta property="twitter:image" content="https://fucklemasque.fr/assets/img/logo.png">
     </head>
@@ -30,6 +30,10 @@
         <div class="panel" id="home" style="padding-top: 60px;">
             <div class="horizontal">
                 <div id="home-panel">
+                    <h2>Pourcentage de la population vacciné</h2>
+                    <div style="height: 200px; width: 100%;">
+                        <canvas id="percent_bar"></canvas>
+                    </div>
                     <h2 id="percent_vaccin"></h2>
                     <p id="remaining_vaccin"></p>
                 </div>
@@ -214,6 +218,7 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-rc.1/dist/chartjs-plugin-datalabels.min.js"></script>
         <script src="/assets/js/app.js"></script>
     </body>
 </html>

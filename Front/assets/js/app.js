@@ -6,6 +6,7 @@ var mini_new_first_dose = $('#mini-new-first-dose')[0].getContext('2d')
 var mini_new_vaccins = $('#mini-new-vaccins')[0].getContext('2d')
 var deliveries = $('#deliveries-chart')[0].getContext('2d')
 var injected_doses = $('#injected-doses')[0].getContext('2d')
+var percent_bar = $('#percent_bar')[0].getContext('2d')
 
 var fullChart = null
 
@@ -98,7 +99,6 @@ $(document).ready(() => {
             $('#first_dose_variation').html(`${first_dose_variation > 0 ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${numberWithSpaces(first_dose_variation)}%`)
             $('#first_dose_variation').addClass(first_dose_variation > 0 ? 'var-p' : 'var-n')
             
-            
             dataAll.forEach(el => {
                 var date = new Date(el.date)
                 labels.push(`${date.getDate()} ${monthsMin[date.getMonth()]}`)
@@ -117,6 +117,96 @@ $(document).ready(() => {
             miniPredictChart(mini_first_dose_prediction, first_dose, labelsDates)
             $('#remaining_vaccin').text(`Encore ${numberWithSpaces(Math.trunc((pop * immunity)-today.vaccins))} personnes à vaccinés avant d'atteindre l'immunité collective (selon l'institut Pasteur). Selon notre estimation, cela sera le ${convertDate(getImmunityDate().toString(), false)}`)
             
+            new Chart(percent_bar, {
+                plugins: [ChartDataLabels],
+                type: 'bar',
+                data: {
+                    labels: [
+                        'Vaccinés'
+                    ],
+                    datasets: [
+                        {
+                            label: 'Vaccinés',
+                            data: [round((today.vaccins * 100) / pop)],
+                            backgroundColor: '#c4f0aa'
+                        },
+                        {
+                            label: 'Non vaccinés',
+                            data: [100 - round((today.vaccins * 100) / pop)],
+                            backgroundColor: '#f7a79c'
+                        }
+                    ],
+                    datalabels: {
+                        color: '#fff',
+                        font: {
+                            family: "'Roboto', 'sans-serif'",
+                            weight: '500',
+                            size: 20
+                        }
+                    }
+                },
+                options: {
+                    plugins: {
+                        tooltip: {
+                            enabled: false
+                        },
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            color: '#fff',
+                            formatter: function(value, context) {
+                                return value + ' %';
+                            }
+                        }
+                        /*annotation: {
+                            annotations: [
+                                {
+                                    type: 'line',
+                                    label: {
+                                        content: round((today.vaccins * 100) / pop) + "%",
+                                        enabled: true,
+                                        position: "top",
+                                        font: {
+                                            size: 10
+                                        }
+                                    },
+                                    xMin: round((today.vaccins * 100) / pop),
+                                    xMax: round((today.vaccins * 100) / pop),
+                                    borderColor: 'rgb(0, 0, 0, 0.5)',
+                                    borderWidth: 2
+                                }
+                            ]
+                        }*/
+                    },
+                    indexAxis: 'y',
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        },
+                        y: {
+                            stacked: true,
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            }
+                        }
+                    },
+                    maintainAspectRatio: false
+                }
+            })
+
             fetch('https://raw.githubusercontent.com/rozierguillaume/vaccintracker/main/data/output/flux-total-nat.json', {cache: 'no-cache'})
             .then(response => {
                 if (!response.ok) {
