@@ -6,7 +6,6 @@ var mini_new_first_dose = $('#mini-new-first-dose')[0].getContext('2d')
 var mini_new_vaccins = $('#mini-new-vaccins')[0].getContext('2d')
 var deliveries = $('#deliveries-chart')[0].getContext('2d')
 var injected_doses = $('#injected-doses')[0].getContext('2d')
-var percent_bar = $('#percent_bar')[0].getContext('2d')
 
 var fullChart = null
 
@@ -22,6 +21,10 @@ var deliveriesData = {}
 var injectedData = {}
 var deliveriesLabels = []
 var labelsDates = []
+var new_vaccin_variation
+var new_first_dose_variation
+var vaccin_variation
+var first_dose_variation
 
 const monthsMin = [
     'janv.',
@@ -56,13 +59,18 @@ $(".card-tooltip").click(function(e) {
     e.stopPropagation();
  });
 
+$(window).resize(() => {
+    onResize()
+})
+
 $(document).ready(() => {
+    onResize()
     $.ajax({
-        url:"https://api.fucklemasque.fr/",
+        url:"https://api.fucklemasque.fr/cov-data",
         type:"GET",
         success:(data) => {
             data.data.events.forEach((el) => {
-                var diff = datediff(new Date(), new Date(el.date))
+                var diff = datediff(new Date(el.date))
                 var htmlEvent = `<div class="event-card">
                 <span class="event-date">${convertDate(el.date)}</span>
                 ${diff > 0 ? '<span class="event-countdown">Dans ' + diff + ' jours</span>' : ''}
@@ -77,7 +85,8 @@ $(document).ready(() => {
             dataAll = data.data.vaccins
             var today = dataAll[dataAll.length - 1]
             var yesterday = dataAll[dataAll.length - 2]
-            $('#percent_vaccin').text(`${round((today.vaccins * 100) / pop)}% vaccinés`)            
+            $('#percent_vaccin').text(`${round((today.vaccins * 100) / pop)}%`)    
+            $('#percent_vaccin_bar').height(`${round((today.vaccins * 100) / pop)}%`)     
             $('#first_dose').text(numberWithSpaces(today.first_dose))
             $('#first_dose_today').text(`+${numberWithSpaces(today.new_first_dose)}`)
             $('#vaccins').text(numberWithSpaces(today.vaccins))
@@ -85,15 +94,15 @@ $(document).ready(() => {
             $('#first-dose-pred').html(numberWithSpaces(today.first_dose) + '<span>(actuellement)</span>')
             $('#new_vaccins').text(`+${numberWithSpaces(today.new_vaccins)}`)
 
-            const new_vaccin_variation = Math.trunc(((today.new_vaccins - yesterday.new_vaccins) / yesterday.new_vaccins) * 100)
-            const new_first_dose_variation = Math.trunc(((today.new_first_dose - yesterday.new_first_dose) / yesterday.new_first_dose) * 100)
+            new_vaccin_variation = Math.trunc(((today.new_vaccins - yesterday.new_vaccins) / yesterday.new_vaccins) * 100)
+            new_first_dose_variation = Math.trunc(((today.new_first_dose - yesterday.new_first_dose) / yesterday.new_first_dose) * 100)
             $('#new_vaccins_variation').html(`${new_vaccin_variation > 0 ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${numberWithSpaces(new_vaccin_variation)}%`)
             $('#new_vaccins_variation').addClass(new_vaccin_variation > 0 ? 'var-p' : 'var-n')
             $('#new_first_dose_variation').html(`${new_first_dose_variation > 0 ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${numberWithSpaces(new_first_dose_variation)}%`)
             $('#new_first_dose_variation').addClass(new_first_dose_variation > 0 ? 'var-p' : 'var-n')
 
-            const vaccin_variation = Math.trunc(((today.vaccins - yesterday.vaccins) / yesterday.vaccins) * 100)
-            const first_dose_variation = Math.trunc(((today.first_dose - yesterday.first_dose) / yesterday.first_dose) * 100)
+            vaccin_variation = Math.trunc(((today.vaccins - yesterday.vaccins) / yesterday.vaccins) * 100)
+            first_dose_variation = Math.trunc(((today.first_dose - yesterday.first_dose) / yesterday.first_dose) * 100)
             $('#vaccins_variation').html(`${vaccin_variation > 0 ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${numberWithSpaces(vaccin_variation)}%`)
             $('#vaccins_variation').addClass(vaccin_variation > 0 ? 'var-p' : 'var-n')
             $('#first_dose_variation').html(`${first_dose_variation > 0 ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${numberWithSpaces(first_dose_variation)}%`)
@@ -109,103 +118,18 @@ $(document).ready(() => {
                 vaccins.push(el.vaccins)
             })
 
+            $('#last-data').text(`Dernières données: ${convertDate(labelsDates[labelsDates.length-1], false)}`)
+
             miniChart(mini_vaccins, vaccins, labels, vaccin_variation)
             miniChart(mini_first_dose, first_dose, labels, first_dose_variation)
             miniChart(mini_new_vaccins, new_vaccins, labels, new_vaccin_variation)
             miniChart(mini_new_first_dose, new_first_dose, labels, new_first_dose_variation)
             miniPredictChart(mini_vaccins_prediction, vaccins, labelsDates)
             miniPredictChart(mini_first_dose_prediction, first_dose, labelsDates)
-            $('#remaining_vaccin').text(`Encore ${numberWithSpaces(Math.trunc((pop * immunity)-today.vaccins))} personnes à vaccinés avant d'atteindre l'immunité collective (selon l'institut Pasteur). Selon notre estimation, cela sera le ${convertDate(getImmunityDate().toString(), false)}`)
-            
-            new Chart(percent_bar, {
-                plugins: [ChartDataLabels],
-                type: 'bar',
-                data: {
-                    labels: [
-                        'Vaccinés'
-                    ],
-                    datasets: [
-                        {
-                            label: 'Vaccinés',
-                            data: [round((today.vaccins * 100) / pop)],
-                            backgroundColor: '#c4f0aa'
-                        },
-                        {
-                            label: 'Non vaccinés',
-                            data: [100 - round((today.vaccins * 100) / pop)],
-                            backgroundColor: '#f7a79c'
-                        }
-                    ],
-                    datalabels: {
-                        color: '#fff',
-                        font: {
-                            family: "'Roboto', 'sans-serif'",
-                            weight: '500',
-                            size: 20
-                        }
-                    }
-                },
-                options: {
-                    plugins: {
-                        tooltip: {
-                            enabled: false
-                        },
-                        legend: {
-                            display: false
-                        },
-                        datalabels: {
-                            color: '#fff',
-                            formatter: function(value, context) {
-                                return value + ' %';
-                            }
-                        }
-                        /*annotation: {
-                            annotations: [
-                                {
-                                    type: 'line',
-                                    label: {
-                                        content: round((today.vaccins * 100) / pop) + "%",
-                                        enabled: true,
-                                        position: "top",
-                                        font: {
-                                            size: 10
-                                        }
-                                    },
-                                    xMin: round((today.vaccins * 100) / pop),
-                                    xMax: round((today.vaccins * 100) / pop),
-                                    borderColor: 'rgb(0, 0, 0, 0.5)',
-                                    borderWidth: 2
-                                }
-                            ]
-                        }*/
-                    },
-                    indexAxis: 'y',
-                    responsive: true,
-                    scales: {
-                        x: {
-                            stacked: true,
-                            ticks: {
-                                display: false
-                            },
-                            grid: {
-                                display: false,
-                                drawBorder: false
-                            }
-                        },
-                        y: {
-                            stacked: true,
-                            ticks: {
-                                display: false
-                            },
-                            grid: {
-                                display: false,
-                                drawBorder: false
-                            }
-                        }
-                    },
-                    maintainAspectRatio: false
-                }
-            })
+            $('#pop-next-vaccine').text(numberWithSpaces(Math.trunc((pop * immunity)-today.vaccins))) 
+            $('#pop-next-vaccine-bar').height(`${round((today.vaccins * 100) / pop * 0.67)}%`)
+            $('#coll-immunity').text(convertDate(getImmunityDate().toString()))
+            $('#coll-immunity-bar').height(`${round(100 - ((datediff(getImmunityDate()) * 100) / $('#coll-immunity-case').height()))}%`)
 
             fetch('https://raw.githubusercontent.com/rozierguillaume/vaccintracker/main/data/output/flux-total-nat.json', {cache: 'no-cache'})
             .then(response => {
@@ -473,22 +397,10 @@ function showCard(cardName) {
         fullChart.destroy()
     }
     var chrt = $('#full-chart')[0].getContext('2d')
-    var gradient = chrt.createLinearGradient(0, 0, 0, $(chrt.canvas).innerHeight());
-    gradient.addColorStop(0, `rgba(190, 250, 209, 0.5)`);   
-    gradient.addColorStop(1, `rgba(190, 250, 209, 0)`);
     var annotations = []
     var currLabels = labels
-    var datasets = [
-        {
-            label: '',
-            pointHitRadius: 20,
-            data: null,
-            fill: true,
-            borderColor: 'rgb(52, 226, 101)',
-            backgroundColor: gradient,
-            tension: 0.2
-        }
-    ]
+    var currVariation = null
+    var datasets = null
     var dates = labelsDates.slice(-5)
     var predictDates = [new Date(dates[dates.length - 1]).addDays(5)]
     for(i = 0; i < 24; i++) {
@@ -504,20 +416,44 @@ function showCard(cardName) {
     })
     switch(cardName) {
         case 'vaccinated':
+            currVariation = vaccin_variation
+            var colors = getChartColor(chrt, currVariation)
+            datasets = [
+                {
+                    label: 'Vaccinés',
+                    pointHitRadius: 20,
+                    data: vaccins,
+                    fill: true,
+                    borderColor: colors.color,
+                    backgroundColor: colors.gradient,
+                    tension: 0.2
+                }
+            ]
             $('#card-full-title').text('Vaccinés')
             $('#card-full-descr').text(`Nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises depuis le ${convertDate(dataAll[0].date, false)}.`)
-            datasets[0].data = vaccins
-            datasets[0].label = 'Vaccinés'
             break
         case 'first-dose':
-            datasets[0].data = first_dose
+            currVariation = first_dose_variation
+            var colors = getChartColor(chrt, currVariation)
+            datasets = [
+                {
+                    label: 'Première dose',
+                    pointHitRadius: 20,
+                    data: first_dose,
+                    fill: true,
+                    borderColor: colors.color,
+                    backgroundColor: colors.gradient,
+                    tension: 0.2
+                }
+            ]
             $('#card-full-title').text('Première dose')
             $('#card-full-descr').text(`Nombre cumulé de personnes ayant reçu au moins une dose depuis le ${convertDate(dataAll[0].date, false)}.`)
-            datasets[0].label = 'Première dose'
             break
         case 'new-vaccinated':
             $('#card-full-title').text('Nouveaux Vaccinés')
             $('#card-full-descr').text(`Nombre de personnes ayant reçu toutes les doses de vaccin requises en 24h.`)
+            currVariation = new_vaccin_variation
+            var colors = getChartColor(chrt, currVariation)
             datasets = [                
                 {
                     label: 'Moyenne',
@@ -532,8 +468,8 @@ function showCard(cardName) {
                     pointHitRadius: 20,
                     data: new_vaccins,
                     fill: true,
-                    borderColor: 'rgb(52, 226, 101)',
-                    backgroundColor: gradient,
+                    borderColor: colors.color,
+                    backgroundColor: colors.gradient,
                     tension: 0.1
                 }
             ]
@@ -541,6 +477,8 @@ function showCard(cardName) {
         case 'new-first-dose':
             $('#card-full-title').text('Nouvelles premières dose')
             $('#card-full-descr').text(`Nombre de personnes ayant reçu au moins une dose en 24h.`)
+            currVariation = new_first_dose_variation
+            var colors = getChartColor(chrt, currVariation)
             datasets = [
                 {
                     label: 'Moyenne',
@@ -555,14 +493,15 @@ function showCard(cardName) {
                     pointHitRadius: 20,
                     data: new_first_dose,
                     fill: true,
-                    borderColor: 'rgb(52, 226, 101)',
-                    backgroundColor: gradient,
+                    borderColor: colors.color,
+                    backgroundColor: colors.gradient,
                     tension: 0.1
                 }                
             ]
             break
         case 'deliveries':
             currLabels = deliveriesLabels
+            currVariation = getTotalStock().variation
             $('#card-full-title').text('Livraisons')
             $('#card-full-descr').text(`Livraisons passées ou officiellement prévues pour les prochaines semaines par type de vaccin.`)
             datasets = [
@@ -616,10 +555,10 @@ function showCard(cardName) {
               ]
             break
         case 'vaccinated-estimation':
-            $('#card-full-title').text('Vaccinés prédiction')
-            $('#card-full-descr').text(`Prédiction du nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises sur 4 mois. Cette prédiction s'ajuste de jour en jour.`)
+            $('#card-full-title').text('Vaccinés estimation')
+            $('#card-full-descr').text(`Prédiction du nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises sur 4 mois. Cette estimation s'ajuste de jour en jour.`)
             currLabels = dates.concat(predictDates)
-            var predictData = getPrediction(vaccins.slice(-2), predictDates.length + 1)
+            var predictData = getPrediction(vaccins, vaccins.length + 1)
             var offset = vaccins[vaccins.length - 1] - predictData[0]
             datasets = [
                 {
@@ -642,7 +581,7 @@ function showCard(cardName) {
                     data: vaccins.slice(-5),
                     fill: true,
                     borderColor: 'rgb(52, 226, 101)',
-                    backgroundColor: gradient,
+                    backgroundColor: getChartColor(chrt, 1).gradient,
                     tension: 0.1
                 }                
             ]
@@ -676,10 +615,10 @@ function showCard(cardName) {
             ]
             break
         case 'first-dose-estimation':
-            $('#card-full-title').text('Première dose prédiction')
-            $('#card-full-descr').text(`Prédiction du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette prédiction s'ajuste de jour en jour.`)
+            $('#card-full-title').text('Première dose estimation')
+            $('#card-full-descr').text(`Prédiction du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette estimation s'ajuste de jour en jour.`)
             currLabels = dates.concat(predictDates)
-            var predictData = getPrediction(first_dose.slice(-2), first_dose.length + 1)
+            var predictData = getPrediction(first_dose, first_dose.length + 1)
             var offset = first_dose[first_dose.length - 1] - predictData[0]
             datasets = [
                 {
@@ -702,7 +641,7 @@ function showCard(cardName) {
                     data: first_dose.slice(-5),
                     fill: true,
                     borderColor: 'rgb(52, 226, 101)',
-                    backgroundColor: gradient,
+                    backgroundColor: getChartColor(chrt, 1).gradient,
                     tension: 0.1
                 }                
             ]
@@ -735,6 +674,12 @@ function showCard(cardName) {
                 }
             ]
             break
+    }
+    if(currVariation) {
+        $('#card-full-title').html($('#card-full-title').text() + '<p id="full-chart-variation"></p>')
+        $('#full-chart-variation').removeClass("var-p var-n")
+        $('#full-chart-variation').html(`${currVariation > 0 ? '<i class="fas fa-arrow-up"></i>' : '<i class="fas fa-arrow-down"></i>'} ${numberWithSpaces(currVariation)}%`)
+        $('#full-chart-variation').addClass(currVariation > 0 ? 'var-p' : 'var-n')
     }
     fullChart = new Chart(chrt, {
         type: 'line',
@@ -777,6 +722,29 @@ function showCard(cardName) {
             }                
         }
     })
+}
+
+function onResize() {
+    $('#last-data').css('padding-left', `${$('.home-panel > .grid > .case:first').position().left}px`)
+}
+
+function getChartColor(ctx, variation) {
+    var gradient = ctx.createLinearGradient(0, 0, 0, $(ctx.canvas).innerHeight());
+    if(variation > 0) {
+        gradient.addColorStop(0, `rgba(190,250,209, 0.7)`)
+        gradient.addColorStop(1, `rgba(190,250,209, 0.2)`)
+        return {
+            gradient,
+            color: `#00bf71`
+        }
+    } else {
+        gradient.addColorStop(0, `rgba(255,216,203, 0.7)`)
+        gradient.addColorStop(1, `rgba(255,216,203, 0.2)`)
+        return {
+            gradient,
+            color: `#ff6134`
+        }
+    }
 }
 
 function closeCard() {
@@ -925,8 +893,10 @@ function miniPredictChart(chrt, data, chrtLabels) {
     })
 }
 
-function datediff(first, second) {
-    return Math.round((second-first)/(1000*60*60*24));
+function datediff(date) {
+    var d = new Date()
+    d.setHours(0,0,0,0)
+    return Math.round((date-d.getTime())/(1000*60*60*24));
 }
 
 const getRegression = (data) => {
@@ -948,8 +918,8 @@ const getPrediction = (data, count) => {
 
 const getImmunityDate = () => {
     let dataRegression = []
-    vaccins.slice(-3).forEach((element, index) => dataRegression.push([index, element]))
+    vaccins.forEach((element, index) => dataRegression.push([index, element]))
     var equation = regression.linear(dataRegression).equation
-    var days = Math.ceil(((pop * immunity) - (equation[0] * 2 + equation[1])) / equation[0]) + 3
-    return new Date(labelsDates.slice(-3)[0]).addDays(days)
+    var days = Math.ceil((pop*immunity+equation[0])/equation[0])
+    return new Date(labelsDates[labelsDates.length-1]).addDays(days)
 }

@@ -19,6 +19,13 @@
         <meta property="twitter:title" content="F*ck Le Masque !">
         <meta property="twitter:description" content="F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. ">
         <meta property="twitter:image" content="https://fucklemasque.fr/assets/img/logo.png">
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-TWPLMZ4R30"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-TWPLMZ4R30');
+        </script>
     </head>
     <body>
         <div class="topnav">
@@ -29,17 +36,43 @@
         </div>
         <div class="panel" id="home" style="padding-top: 60px;">
             <div class="horizontal">
-                <div id="home-panel">
-                    <h2>Pourcentage de la population vacciné</h2>
-                    <div style="height: 200px; width: 100%;">
-                        <canvas id="percent_bar"></canvas>
-                    </div>
-                    <h2 id="percent_vaccin"></h2>
-                    <p id="remaining_vaccin"></p>
+                <div style="width: 100%;">
+                    <h2 id="last-data"></h2>
                 </div>
+                <div class="home-panel">
+                    <div class="grid">
+                        <div class="case">
+                            <div class="case-tooltip">
+                                <i class="fas fa-info-circle tooltip"><span>Pourcentage de la population vaccinée.</span></i>
+                            </div>
+                            <p>Population vaccinée</p>
+                            <h2 id="percent_vaccin"></h2>
+                            <div class="loading-bar" id="percent_vaccin_bar"></div>
+                            <div class="marked"></div>
+                        </div>
+                        <div class="case">
+                            <div class="case-tooltip">
+                                <i class="fas fa-info-circle tooltip"><span>Population à vacciner pour atteindre l'immunité collective (67% de la population immunisée selon l'institut Pasteur).</span></i>
+                            </div>
+                            <p>Population à vacciner</p>
+                            <h2 id="pop-next-vaccine"></h2>
+                            <div class="loading-bar" id="pop-next-vaccine-bar"></div>
+                            <div class="marked"></div>
+                        </div>
+                        <div class="case" id="coll-immunity-case">
+                            <div class="case-tooltip">
+                                <i class="fas fa-info-circle tooltip"><span>Date estimée où l'on atteindra l'immunité collective (67% de la population immunisée selon l'institut Pasteur).</span></i>
+                            </div>
+                            <p>Immunité collective estimée</p>
+                            <h2 id="coll-immunity"></h2>
+                            <div class="loading-bar" id="coll-immunity-bar"></div>
+                            <div class="marked"></div>
+                        </div>
+                    </div>
+                </div>               
                 <div class="btn-group" style="margin-bottom: 40px;">
                     <button class="active" id="data-btn" onclick="showEstimations()">Données</button>
-                    <button id="estimations-btn" onclick="showData()">Prédictions</button>
+                    <button id="estimations-btn" onclick="showData()">Estimations</button>
                 </div>
                 <div class="grid" id="charts">
                     <div class="card" onclick="showCard('vaccinated')">
@@ -116,9 +149,9 @@
                 <div class="grid" id="estimations" style="display: none;">
                     <div class="card" onclick="showCard('vaccinated-estimation')">
                         <i class="fas fa-syringe logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
-                        <p>Vaccinés prédiction</p>
+                        <p>Vaccinés estimation</p>
                         <div class="card-tooltip">
-                            <i class="fas fa-info-circle tooltip"><span>Prédiction du nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises sur 4 mois. Cette prédiction s'ajuste de jour en jour.</span></i>
+                            <i class="fas fa-info-circle tooltip"><span>Estimation du nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises sur 4 mois. Cette estimation s'ajuste de jour en jour.</span></i>
                         </div>
                         <h3 id="vaccins-pred"></h3>
                         <div class="mini-chart">
@@ -127,9 +160,9 @@
                     </div>
                     <div class="card" onclick="showCard('first-dose-estimation')">
                         <i class="fas fa-certificate logo" style="color: #34e265; background-color: #edfdf2;"></i>
-                        <p>Première dose prédiction</p>
+                        <p>Première dose estimation</p>
                         <div class="card-tooltip">
-                            <i class="fas fa-info-circle tooltip"><span>Prédiction du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette prédiction s'ajuste de jour en jour.</span></i>
+                            <i class="fas fa-info-circle tooltip"><span>Estimation du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette estimation s'ajuste de jour en jour.</span></i>
                         </div>
                         <h3 id="first-dose-pred"></h3>
                         <div class="mini-chart">
@@ -143,19 +176,21 @@
                 <p>À l'heure actuelle, toutes les personnes résidant en France ne sont pas éligibles à la vaccination. Cela finira par arriver mais pour l'heure si vous souhaitez vous faire vacciner, vous pouvez tester votre éligibilité en cliquant sur le bouton ci-dessous.</p>
                 <a class="link-btn" href="https://www.gouvernement.fr/info-coronavirus/vaccins?xtor=SEC-3-GOO-[]-[511245726430]-S-[%2B%C3%A9ligibilit%C3%A9%20%2Bvaccination]" target="_blank"><span>📝</span>Tester votre élegibilité</a>
             </div>
-            <div class="events">
-                <h2 class="md-title">Événements liés à la vaccination</h2>
-                <div class="btn-group" style="margin-bottom: 40px;">
-                    <button class="active" id="next-events-btn" onclick="showNextEvents()">Prochainement</button>
-                    <button id="all-events-btn" onclick="showAllEvents()">Tous</button>
-                </div>
-                <div class="grid" id="next-events"></div>
-                <div class="grid" id="all-events" style="display: none;"></div>
-            </div>            
+            <div class="horizontal">
+                <div class="events">
+                    <h2 class="md-title">Événements liés à la vaccination</h2>
+                    <div class="btn-group" style="margin-bottom: 40px;">
+                        <button class="active" id="next-events-btn" onclick="showNextEvents()">Prochainement</button>
+                        <button id="all-events-btn" onclick="showAllEvents()">Tous</button>
+                    </div>
+                    <div class="grid" id="next-events"></div>
+                    <div class="grid" id="all-events" style="display: none;"></div>
+                </div>            
+            </div>
             <div class="banner">
                 <h2>Vous êtes éligible à la vaccination ?</h2>
                 <p>Vite ma Dose est un outil qui vous permet de trouver un rendez-vous de vaccination contre le Covid 19 au plus proche de chez vous et rapidement. Faciles et simples, nous vous recommandons vite ma Dose pour votre vaccination. Tous ensemble contre le Covid 💪</p>
-                <a href="https://vitemadose.covidtracker.fr/" target="_blank" class="link-btn"><span>💉</span>Vite Ma Dose</a>
+                <a href="https://vitemadose.covidtracker.fr/" target="_blank" class="link-btn"><img src="/assets/img/vite-ma-dose.png"> Vite Ma Dose</a>
             </div>
             <div class="vaccins-allowed">
                 <h2 class="md-title">Vaccins autorisés en France</h2>
@@ -200,7 +235,7 @@
             </div>
             <div class="banner">
                 <h2>À propos</h2>
-                <p>F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. Malgré le nom atypique du site, nous n'encourage personne à arrêter le port du masque, au contraire. Le masque est un des gestes barrières les plus efficaces contre le coronavirus. Nous attendons juste le moment où l'immunité collective sera atteinte pour ne plus à avoir à le porter.</p>
+                <p>F*ck Le Masque est un tracker des différents vaccins contre le Covid autorisé en France. Malgré le nom atypique du site, nous n'encourage personne à arrêter le port du masque, au contraire. Le masque est un des gestes barrières les plus efficaces contre le coronavirus. Nous attendons juste le moment où l'immunité collective sera atteinte pour ne plus à avoir à le porter. Également, les estimations que vous trouverez sur ce site peuvent s'avérer totalement fausses ou changer du jour au lendemain. La virologie est un domaine complexe qui évolue de manière imprévisible.</p>
                 <img class="sm-logo" src="/assets/img/logo.png" alt="">
                 <h5 class="author">Created by <a target="_blank" href="https://www.instagram.com/marius.brt/">@marius.brt</a></h5>
             </div>
@@ -208,7 +243,7 @@
         <div class="panel" id="card-full" style="display: none;">  
             <div style="padding-top: 120px;">
                 <h1 id="card-full-title"></h1>
-                <p id="card-full-descr"></p>
+                <p id="card-full-descr"></p>                
                 <div class="chart-container">
                     <canvas id="full-chart"></canvas>
                 </div>

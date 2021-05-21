@@ -3,7 +3,7 @@
 body {
     overflow-y: overlay;
     font-weight: 500;
-    background-color: rgb(250, 250, 250);
+    background-color: rgb(250,250,250);
     margin: 0;
     padding: 0;
     height: 100vh;
@@ -58,6 +58,7 @@ body {
 }
 
 .banner p {
+    font-weight: 400;
     width: 70%;
     margin-bottom: 50px;
 }
@@ -107,8 +108,11 @@ body {
         row-gap: 20px;
         column-gap: 10px;
     }
-    .card, .event-card, .vaccin-card, .mini-chart {
+    .card, .event-card, .vaccin-card, .mini-chart, .home-panel .case {
         width: 300px;
+    }
+    #last-data {
+        font-size: 22px;
     }
 }
 
@@ -121,27 +125,35 @@ body {
         row-gap: 20px;
         column-gap: 10px;
     }
-    .card, .event-card, .vaccin-card, .mini-chart {
+    .card, .event-card, .vaccin-card, .mini-chart, .home-panel .case {
         width: 250px;
     }
     .card h3 span {
         font-size: 12px !important;
         bottom: 8px !important;
     }
+    #last-data {
+        font-size: 18px;
+    }
+    #card-full-descr {
+        margin-bottom: 50px !important;
+    }
+    #full-chart {
+        height: 300px !important;
+    }
 }
 
-#home-panel {
+.home-panel {
     width: 90%;
     box-sizing: border-box;
-    background-color: #fff;
-    margin-bottom: 50px;
+    margin-bottom: 100px;
     border-radius: 10px;
     padding: 20px;
 }
 
 .events, .vaccins-allowed {
     margin: 50px 0;
-    width: 100%;
+    width: 90%;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -185,6 +197,67 @@ body {
 .card-container {
     margin: 50px 0;
     width: 100%;
+}
+
+.home-panel .case {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+    padding: 20px;
+    transition: 0.3s ease-in;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #fff;
+}
+
+.home-panel .case .case-tooltip {
+    padding: 5px;
+    z-index: 10;
+    position: absolute;
+    top: 30px;
+    right: 30px;
+}
+
+.home-panel .case:hover {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 10px 50px;
+    transition: 0.2s;
+}
+
+.home-panel .case .loading-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    width: 100%;
+    background-color: #000;
+}
+
+.home-panel .case .marked {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    background-color: #00bf71;
+    mix-blend-mode: screen;
+}
+
+.home-panel .case p, .home-panel .case h2 {    
+    position: relative;
+    mix-blend-mode: difference;
+    color: white;
+    z-index: 3;
+}
+
+.home-panel .case p {
+    margin-bottom: 0;
+    font-size: 15px;
+}
+
+.home-panel .case h2 {
+    margin-top: 5px;
+    font-size: 35px;
 }
 
 .card {
@@ -321,6 +394,11 @@ body {
     box-shadow: rgba(0, 0, 0, 0.04) 0px 10px 50px;
 }
 
+.link-btn img {
+    height: 22px;
+    margin-right: 8px;
+}
+
 .link-btn span {
     margin-right: 8px;
     font-size: 15px;
@@ -339,13 +417,13 @@ body {
     color: #341eff;
 }
 
-.btn-group button:not(.active) {
+.btn-group button:not(.active) {    
     background-color: #f5f5f5;
     color: #838383;
 }
 
 .btn-group button.active:hover {
-    background-color: #dfdffa;
+    background-color: #e4e4ff;
 }
 
 .btn-group button:not(.active):hover {
@@ -476,4 +554,20 @@ body {
         width: 80%;
         font-size: 15px;
     }
+}
+
+@media only screen and (min-width: 1600px) {
+    .banner p {
+        width: 50%;
+    }
+}
+
+#card-full-title {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+#card-full-title p {
+    margin-left: 15px;
 }

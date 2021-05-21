@@ -3,12 +3,20 @@ const express = require('express')
 const app = express()
 const conn = require('./src/conn')
 const cors = require('cors')
+const cron = require('node-cron')
 
-require('./data/getData').getAll(conn)
+cron.schedule('0 20 * * *', () => {    
+    require('./data/getData').getAll(conn)
+})
+
 
 app.use(cors())
 
 app.get('/', (req, res) => {
+    res.status(200).send('Hi !')
+})
+
+app.get('/cov-data', (req, res) => {
     conn.query("SELECT * FROM vaccin WHERE MOD(id,5)=0 OR id=(SELECT max(id) FROM vaccin) OR id=((SELECT max(id) FROM vaccin) - 1) OR id=(SELECT min(id) FROM vaccin) ORDER BY `date` ASC", (err, data) => {
         if(err) throw err
         conn.query("SELECT * FROM events ORDER BY `date` ASC", (err, events) => {
@@ -24,6 +32,6 @@ app.get('/', (req, res) => {
     })
 })
 
-app.listen(3000, "192.168.0.185", () => {
+app.listen(3000, () => {
     console.log('Server started !')
 })
