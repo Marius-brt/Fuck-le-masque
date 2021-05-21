@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://fucklemasque.fr/sitemap.xml
