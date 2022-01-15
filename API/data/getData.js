@@ -1,56 +1,67 @@
-const csvtojson = require('csvtojson')
-const axios = require('axios').default
-const forEach = require('foreach-promise')
+const axios = require("axios");
+const util = require("util");
 
 module.exports = {
-    get: (conn) => {
-        axios.get('https://raw.githubusercontent.com/rozierguillaume/covid-19/master/data/france/donnees-vacsi-a-fra.csv', { responseType: 'blob'}).then((res) => {
-            csvtojson({output:"line"}).fromString(res.data).then((data) => {
-                conn.query('SELECT * FROM vaccin WHERE date=?', [
-                    data[data.length - 1].split(';')[2]
-                ], (err, exist) => {
-                    if(err) throw err
-                    if(exist.length == 0) {                        
-                        var currDt = data[data.length - 1].split(';')
-                        conn.query("INSERT INTO `vaccin`(`date`, `vaccins`, `new_vaccins`, `first_dose`, `new_first_dose`) VALUES (?,?,?,?,?)", [
-                            currDt[2],
-                            currDt[6],
-                            currDt[4],
-                            currDt[5],
-                            currDt[3]
-                        ], (err) => {
-                            if(err) throw err
-                        })
-                    }
-                })
-            })
-        })
-    },
-    getAll: (conn) => {
-        axios.get('https://raw.githubusercontent.com/rozierguillaume/covid-19/master/data/france/donnees-vacsi-a-fra.csv', { responseType: 'blob'}).then((res) => {
-            csvtojson({output:"line"}).fromString(res.data).then((data) => {
-                forEach(data, (el) => {
-                    var currDt = el.split(';')
-                    if(parseInt(currDt[1]) == 0) {
-                        conn.query('SELECT * FROM vaccin WHERE date=?', [
-                            currDt[2]
-                        ], (err, exist) => {
-                            if(err) throw err
-                            if(exist.length == 0) {                                
-                                conn.query("INSERT INTO `vaccin`(`date`, `vaccins`, `new_vaccins`, `first_dose`, `new_first_dose`) VALUES (?,?,?,?,?)", [
-                                    currDt[2],
-                                    currDt[6],
-                                    currDt[4],
-                                    currDt[5],
-                                    currDt[3]
-                                ], (err) => {
-                                    if(err) throw err
-                                })
-                            }
-                        })
-                    }
-                })
-            })
-        })
-    }
-}
+  get: () => {
+    const conn = require("../src/conn");
+    const query = util.promisify(conn.query).bind(conn);
+    axios({
+      method: "get",
+      url: "https://raw.githubusercontent.com/rozierguillaume/vaccintracker/main/data/output/vacsi-ndose-fra.json",
+    })
+      .then(async (resp) => {
+        resp = resp.data;
+        for await (const i of resp.jour.keys()) {
+          let exist = await query("SELECT id FROM vaccin WHERE date=?", [
+            resp.jour[i],
+          ]);
+          if (exist.length === 0) {
+            conn.query(
+              "INSERT INTO `vaccin`(`date`, `third_dose`, `new_third_dose`, `first_dose`, `new_first_dose`, `second_dose`, `new_second_dose`) VALUES (?,?,?,?,?,?,?)",
+              [
+                resp.jour[i],
+                resp.n_cum_dose3[i],
+                resp.n_dose3[i],
+                resp.n_cum_dose1[i],
+                resp.n_dose1[i],
+                resp.n_cum_dose2[i],
+                resp.n_dose2[i],
+              ]
+            );
+          }
+        }
+        conn.end();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+  getAll: () => {
+    const conn = require("../src/conn");
+    axios({
+      method: "get",
+      url: "https://raw.githubusercontent.com/rozierguillaume/vaccintracker/main/data/output/vacsi-ndose-fra.json",
+    })
+      .then(async (resp) => {
+        resp = resp.data;
+        for await (const i of resp.jour.keys()) {
+          conn.query(
+            "INSERT INTO `vaccin`(`date`, `third_dose`, `new_third_dose`, `first_dose`, `new_first_dose`, `second_dose`, `new_second_dose`) VALUES (?,?,?,?,?,?,?)",
+            [
+              resp.jour[i],
+              resp.n_cum_dose3[i],
+              resp.n_dose3[i],
+              resp.n_cum_dose1[i],
+              resp.n_dose1[i],
+              resp.n_cum_dose2[i],
+              resp.n_dose2[i],
+            ]
+          );
+        }
+        conn.end();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+};
