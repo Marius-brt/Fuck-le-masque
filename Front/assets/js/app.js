@@ -2,20 +2,29 @@ var mini_first_dose = $("#mini-first-dose")[0].getContext("2d");
 var mini_first_dose_prediction = $("#mini-first-dose-estimation")[0].getContext(
   "2d"
 );
-var mini_vaccins = $("#mini-vaccins")[0].getContext("2d");
-var mini_vaccins_prediction = $("#mini-vaccins-estimation")[0].getContext("2d");
+var mini_second_dose_prediction = $(
+  "#mini-second-dose-estimation"
+)[0].getContext("2d");
+var mini_third_dose_prediction = $("#mini-third-dose-estimation")[0].getContext(
+  "2d"
+);
 var mini_new_first_dose = $("#mini-new-first-dose")[0].getContext("2d");
-var mini_new_vaccins = $("#mini-new-vaccins")[0].getContext("2d");
+var mini_second_dose = $("#mini-second-dose")[0].getContext("2d");
+var mini_new_second_dose = $("#mini-new-second-dose")[0].getContext("2d");
+var mini_third_dose = $("#mini-third-dose")[0].getContext("2d");
+var mini_new_third_dose = $("#mini-new-third-dose")[0].getContext("2d");
 var deliveries = $("#deliveries-chart")[0].getContext("2d");
 var injected_doses = $("#injected-doses")[0].getContext("2d");
 
 var fullChart = null;
 
 const pop = 66732538;
-const immunity = 0.67;
-var vaccins = [];
+const immunity = 0.8;
 var first_dose = [];
-var new_vaccins = [];
+var second_dose = [];
+var new_second_dose = [];
+var third_dose = [];
+var new_third_dose = [];
 var new_first_dose = [];
 var labels = [];
 var dataAll = [];
@@ -23,10 +32,12 @@ var deliveriesData = {};
 var injectedData = {};
 var deliveriesLabels = [];
 var labelsDates = [];
-var new_vaccin_variation;
-var new_first_dose_variation;
-var vaccin_variation;
 var first_dose_variation;
+var new_first_dose_variation;
+var second_dose_variation;
+var new_second_dose_variation;
+var third_dose_variation;
+var new_third_dose_variation;
 
 const monthsMin = [
   "janv.",
@@ -89,6 +100,11 @@ $(document).ready(() => {
           $("#next-events").append(htmlEvent);
         }
       });
+      if ($("#next-events").children().length == 0) {
+        $("#next-events").append(
+          `<p style="width:100%;text-align:center">Pas d'événement à venir</p>`
+        );
+      }
 
       dataAll = data.data.vaccins;
       var today = dataAll[dataAll.length - 1];
@@ -97,80 +113,64 @@ $(document).ready(() => {
       $("#percent_vaccin_bar").height(`${round((today.vaccins * 100) / pop)}%`);
       $("#first_dose").text(numberWithSpaces(today.first_dose));
       $("#first_dose_today").text(`+${numberWithSpaces(today.new_first_dose)}`);
-      $("#vaccins").text(numberWithSpaces(today.vaccins));
-      $("#vaccins-pred").html(
-        numberWithSpaces(today.vaccins) + "<span>(actuellement)</span>"
-      );
+      $("#second_dose").text(numberWithSpaces(today.second_dose));
+      $("#new_second_dose").text(`+${numberWithSpaces(today.new_second_dose)}`);
+      $("#third_dose").text(numberWithSpaces(today.third_dose));
+      $("#new_third_dose").text(`+${numberWithSpaces(today.new_third_dose)}`);
       $("#first-dose-pred").html(
         numberWithSpaces(today.first_dose) + "<span>(actuellement)</span>"
       );
-      $("#new_vaccins").text(`+${numberWithSpaces(today.new_vaccins)}`);
-
-      new_vaccin_variation = Math.trunc(
-        ((today.new_vaccins - yesterday.new_vaccins) / yesterday.new_vaccins) *
-          100
+      $("#second-dose-pred").html(
+        numberWithSpaces(today.second_dose) + "<span>(actuellement)</span>"
       );
-      new_first_dose_variation = Math.trunc(
-        ((today.new_first_dose - yesterday.new_first_dose) /
-          yesterday.new_first_dose) *
-          100
+      $("#third-dose-pred").html(
+        numberWithSpaces(today.third_dose) + "<span>(actuellement)</span>"
       );
-      $("#new_vaccins_variation").html(
-        `${
-          new_vaccin_variation > 0
-            ? '<i class="fas fa-arrow-up"></i>'
-            : '<i class="fas fa-arrow-down"></i>'
-        } ${numberWithSpaces(new_vaccin_variation)}%`
+      first_dose_variation = calcVariation(
+        "first_dose_variation",
+        today.first_dose,
+        yesterday.first_dose
       );
-      $("#new_vaccins_variation").addClass(
-        new_vaccin_variation > 0 ? "var-p" : "var-n"
+      new_first_dose_variation = calcVariation(
+        "new_first_dose_variation",
+        today.new_first_dose,
+        yesterday.new_first_dose
       );
-      $("#new_first_dose_variation").html(
-        `${
-          new_first_dose_variation > 0
-            ? '<i class="fas fa-arrow-up"></i>'
-            : '<i class="fas fa-arrow-down"></i>'
-        } ${numberWithSpaces(new_first_dose_variation)}%`
+      second_dose_variation = calcVariation(
+        "second_dose_variation",
+        today.second_dose,
+        yesterday.second_dose
       );
-      $("#new_first_dose_variation").addClass(
-        new_first_dose_variation > 0 ? "var-p" : "var-n"
+      new_second_dose_variation = calcVariation(
+        "new_second_dose_variation",
+        today.new_second_dose,
+        yesterday.new_second_dose
       );
-
-      vaccin_variation = Math.trunc(
-        ((today.vaccins - yesterday.vaccins) / yesterday.vaccins) * 100
+      third_dose_variation = calcVariation(
+        "third_dose_variation",
+        today.third_dose,
+        yesterday.third_dose
       );
-      first_dose_variation = Math.trunc(
-        ((today.first_dose - yesterday.first_dose) / yesterday.first_dose) * 100
-      );
-      $("#vaccins_variation").html(
-        `${
-          vaccin_variation > 0
-            ? '<i class="fas fa-arrow-up"></i>'
-            : '<i class="fas fa-arrow-down"></i>'
-        } ${numberWithSpaces(vaccin_variation)}%`
-      );
-      $("#vaccins_variation").addClass(
-        vaccin_variation > 0 ? "var-p" : "var-n"
-      );
-      $("#first_dose_variation").html(
-        `${
-          first_dose_variation > 0
-            ? '<i class="fas fa-arrow-up"></i>'
-            : '<i class="fas fa-arrow-down"></i>'
-        } ${numberWithSpaces(first_dose_variation)}%`
-      );
-      $("#first_dose_variation").addClass(
-        first_dose_variation > 0 ? "var-p" : "var-n"
+      new_third_dose_variation = calcVariation(
+        "new_third_dose_variation",
+        today.new_third_dose,
+        yesterday.new_third_dose
       );
 
       dataAll.forEach((el) => {
         var date = new Date(el.date);
-        labels.push(`${date.getDate()} ${monthsMin[date.getMonth()]}`);
+        labels.push(
+          `${date.getDate()} ${
+            monthsMin[date.getMonth()]
+          } ${date.getFullYear()}`
+        );
         labelsDates.push(el.date);
         first_dose.push(el.first_dose);
-        new_vaccins.push(el.new_vaccins);
         new_first_dose.push(el.new_first_dose);
-        vaccins.push(el.vaccins);
+        second_dose.push(el.second_dose);
+        new_second_dose.push(el.new_second_dose);
+        third_dose.push(el.third_dose);
+        new_third_dose.push(el.new_third_dose);
       });
 
       $("#last-data").text(
@@ -179,39 +179,38 @@ $(document).ready(() => {
           false
         )}`
       );
-
-      miniChart(mini_vaccins, vaccins, labels, vaccin_variation);
       miniChart(mini_first_dose, first_dose, labels, first_dose_variation);
-      miniChart(mini_new_vaccins, new_vaccins, labels, new_vaccin_variation);
       miniChart(
         mini_new_first_dose,
         new_first_dose,
         labels,
         new_first_dose_variation
       );
-      miniPredictChart(mini_vaccins_prediction, vaccins, labelsDates);
-      miniPredictChart(mini_first_dose_prediction, first_dose, labelsDates);
-      const to_vaccin = pop * immunity - today.vaccins;
-      if (to_vaccin > 0) {
-        $("#pop-next-vaccine").text(
-          numberWithSpaces(Math.trunc(pop * immunity - today.vaccins))
-        );
-        $("#pop-next-vaccine-bar").height(
-          `${round(((today.vaccins * 100) / pop) * 0.67)}%`
-        );
-      } else {
-        $("#pop-next-vaccine").text(0);
-        $("#pop-next-vaccine-bar").height(`100%`);
-      }
-      $("#coll-immunity").text(convertDate(getImmunityDate().toString()));
-      $("#coll-immunity-bar").height(
-        `${round(
-          100 -
-            (datediff(getImmunityDate()) * 100) /
-              $("#coll-immunity-case").height()
-        )}%`
+      miniChart(mini_second_dose, second_dose, labels, second_dose_variation);
+      miniChart(
+        mini_new_second_dose,
+        new_second_dose,
+        labels,
+        new_second_dose_variation
       );
-
+      miniChart(mini_third_dose, third_dose, labels, third_dose_variation);
+      miniChart(
+        mini_new_third_dose,
+        new_third_dose,
+        labels,
+        new_third_dose_variation
+      );
+      miniPredictChart(mini_first_dose_prediction, first_dose, labelsDates);
+      miniPredictChart(mini_second_dose_prediction, second_dose, labelsDates);
+      miniPredictChart(mini_third_dose_prediction, third_dose, labelsDates);
+      $("#coll-first").text(numberWithSpaces(today.first_dose));
+      $("#coll-first-bar").height(`${round((today.first_dose * 100) / pop)}%`);
+      $("#coll-second").text(numberWithSpaces(today.second_dose));
+      $("#coll-second-bar").height(
+        `${round((today.second_dose * 100) / pop)}%`
+      );
+      $("#coll-third").text(numberWithSpaces(today.third_dose));
+      $("#coll-third-bar").height(`${round((today.third_dose * 100) / pop)}%`);
       fetch(
         "https://raw.githubusercontent.com/rozierguillaume/vaccintracker/main/data/output/flux-total-nat.json",
         { cache: "no-cache" }
@@ -424,6 +423,19 @@ $(document).ready(() => {
   });
 });
 
+function calcVariation(id, today, yesterday) {
+  const variation = Math.trunc(((today - yesterday) / yesterday) * 100);
+  $("#" + id).html(
+    `${
+      variation > 0
+        ? '<i class="fas fa-arrow-up"></i>'
+        : '<i class="fas fa-arrow-down"></i>'
+    } ${numberWithSpaces(variation)}%`
+  );
+  $("#" + id).addClass(variation > 0 ? "var-p" : "var-n");
+  return variation;
+}
+
 function showData() {
   $("#estimations-btn").addClass("active");
   $("#data-btn").removeClass("active");
@@ -526,35 +538,17 @@ function showCard(cardName) {
   }
   dates.forEach((el, i) => {
     var date = new Date(el);
-    dates[i] = `${date.getDate()} ${monthsMin[date.getMonth()]}`;
+    dates[i] = `${date.getDate()} ${
+      monthsMin[date.getMonth()]
+    } ${date.getFullYear()}`;
   });
   predictDates.forEach((el, i) => {
     var date = new Date(el);
-    predictDates[i] = `${date.getDate()} ${monthsMin[date.getMonth()]}`;
+    predictDates[i] = `${date.getDate()} ${
+      monthsMin[date.getMonth()]
+    } ${date.getFullYear()}`;
   });
   switch (cardName) {
-    case "vaccinated":
-      currVariation = vaccin_variation;
-      var colors = getChartColor(chrt, currVariation);
-      datasets = [
-        {
-          label: "Vaccinés",
-          pointHitRadius: 20,
-          data: vaccins,
-          fill: true,
-          borderColor: colors.color,
-          backgroundColor: colors.gradient,
-          tension: 0.2,
-        },
-      ];
-      $("#card-full-title").text("Vaccinés");
-      $("#card-full-descr").text(
-        `Nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises depuis le ${convertDate(
-          dataAll[0].date,
-          false
-        )}.`
-      );
-      break;
     case "first-dose":
       currVariation = first_dose_variation;
       var colors = getChartColor(chrt, currVariation);
@@ -577,37 +571,54 @@ function showCard(cardName) {
         )}.`
       );
       break;
-    case "new-vaccinated":
-      $("#card-full-title").text("Nouveaux Vaccinés");
-      $("#card-full-descr").text(
-        `Nombre de personnes ayant reçu toutes les doses de vaccin requises en 24h.`
-      );
-      currVariation = new_vaccin_variation;
+    case "second-dose":
+      currVariation = second_dose_variation;
       var colors = getChartColor(chrt, currVariation);
       datasets = [
         {
-          label: "Moyenne",
+          label: "Deuxième dose",
           pointHitRadius: 20,
-          data: getRegression(new_vaccins),
-          fill: false,
-          borderColor: "rgba(83, 204, 255, 0.5)",
-          tension: 0.2,
-        },
-        {
-          label: "Nouveaux vaccinés",
-          pointHitRadius: 20,
-          data: new_vaccins,
+          data: second_dose,
           fill: true,
           borderColor: colors.color,
           backgroundColor: colors.gradient,
-          tension: 0.1,
+          tension: 0.2,
         },
       ];
+      $("#card-full-title").text("Deuxième dose");
+      $("#card-full-descr").text(
+        `Nombre cumulé de personnes ayant reçu au moins deux doses depuis le ${convertDate(
+          dataAll[0].date,
+          false
+        )}.`
+      );
+      break;
+    case "third-dose":
+      currVariation = third_dose_variation;
+      var colors = getChartColor(chrt, currVariation);
+      datasets = [
+        {
+          label: "Troisième dose",
+          pointHitRadius: 20,
+          data: third_dose,
+          fill: true,
+          borderColor: colors.color,
+          backgroundColor: colors.gradient,
+          tension: 0.2,
+        },
+      ];
+      $("#card-full-title").text("Troisième dose");
+      $("#card-full-descr").text(
+        `Nombre cumulé de personnes ayant reçu au moins trois doses depuis le ${convertDate(
+          dataAll[0].date,
+          false
+        )}.`
+      );
       break;
     case "new-first-dose":
-      $("#card-full-title").text("Nouvelles premières dose");
+      $("#card-full-title").text("Premières doses aujourd'hui");
       $("#card-full-descr").text(
-        `Nombre de personnes ayant reçu au moins une dose en 24h.`
+        `Nombre de personnes ayant reçu une dose en 24h.`
       );
       currVariation = new_first_dose_variation;
       var colors = getChartColor(chrt, currVariation);
@@ -624,6 +635,60 @@ function showCard(cardName) {
           label: "Premières doses injectées",
           pointHitRadius: 20,
           data: new_first_dose,
+          fill: true,
+          borderColor: colors.color,
+          backgroundColor: colors.gradient,
+          tension: 0.1,
+        },
+      ];
+      break;
+    case "new-second-dose":
+      $("#card-full-title").text("Deuxièmes doses aujourd'hui");
+      $("#card-full-descr").text(
+        `Nombre de personnes ayant reçu une deuxième dose en 24h.`
+      );
+      currVariation = new_second_dose_variation;
+      var colors = getChartColor(chrt, currVariation);
+      datasets = [
+        {
+          label: "Moyenne",
+          pointHitRadius: 20,
+          data: getRegression(new_second_dose),
+          fill: false,
+          borderColor: "rgba(83, 204, 255, 0.5)",
+          tension: 0.2,
+        },
+        {
+          label: "Deuxièmes doses injectées",
+          pointHitRadius: 20,
+          data: new_second_dose,
+          fill: true,
+          borderColor: colors.color,
+          backgroundColor: colors.gradient,
+          tension: 0.1,
+        },
+      ];
+      break;
+    case "new-third-dose":
+      $("#card-full-title").text("Troisièmes doses aujourd'hui");
+      $("#card-full-descr").text(
+        `Nombre de personnes ayant reçu une troisième dose en 24h.`
+      );
+      currVariation = new_third_dose_variation;
+      var colors = getChartColor(chrt, currVariation);
+      datasets = [
+        {
+          label: "Moyenne",
+          pointHitRadius: 20,
+          data: getRegression(new_third_dose),
+          fill: false,
+          borderColor: "rgba(83, 204, 255, 0.5)",
+          tension: 0.2,
+        },
+        {
+          label: "Troisièmes doses injectées",
+          pointHitRadius: 20,
+          data: new_third_dose,
           fill: true,
           borderColor: colors.color,
           backgroundColor: colors.gradient,
@@ -688,14 +753,13 @@ function showCard(cardName) {
         },
       ];
       break;
-    case "vaccinated-estimation":
-      $("#card-full-title").text("Vaccinés estimation");
+    case "first-dose-estimation":
+      $("#card-full-title").text("Première dose estimation");
       $("#card-full-descr").text(
-        `Prédiction du nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises sur 4 mois. Cette estimation s'ajuste de jour en jour.`
+        `Prédiction du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette estimation s'ajuste de jour en jour.`
       );
       currLabels = dates.concat(predictDates);
-      var predictData = getPrediction(vaccins, vaccins.length + 1);
-      var offset = vaccins[vaccins.length - 1] - predictData[0];
+      var predictData = getPrediction(first_dose);
       datasets = [
         {
           parsing: false,
@@ -703,7 +767,7 @@ function showCard(cardName) {
           pointHitRadius: 20,
           data: predictData.map((value, idx) => ({
             x: currLabels[dates.length - 1 + idx],
-            y: value + offset,
+            y: value,
           })),
           fill: false,
           borderColor: "rgba(83, 204, 255, 0.5)",
@@ -712,9 +776,9 @@ function showCard(cardName) {
           cubicInterpolationMode: "linear",
         },
         {
-          label: "Vaccins",
+          label: "Première Dose",
           pointHitRadius: 20,
-          data: vaccins.slice(-5),
+          data: first_dose.slice(-5),
           fill: true,
           borderColor: "rgb(52, 226, 101)",
           backgroundColor: getChartColor(chrt, 1).gradient,
@@ -750,14 +814,13 @@ function showCard(cardName) {
         },
       ];
       break;
-    case "first-dose-estimation":
-      $("#card-full-title").text("Première dose estimation");
+    case "second-dose-estimation":
+      $("#card-full-title").text("Deuxième dose estimation");
       $("#card-full-descr").text(
-        `Prédiction du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette estimation s'ajuste de jour en jour.`
+        `Prédiction du nombre cumulé de personnes ayant reçu au moins deux doses sur 4 mois. Cette estimation s'ajuste de jour en jour.`
       );
       currLabels = dates.concat(predictDates);
-      var predictData = getPrediction(first_dose, first_dose.length + 1);
-      var offset = first_dose[first_dose.length - 1] - predictData[0];
+      var predictData = getPrediction(second_dose);
       datasets = [
         {
           parsing: false,
@@ -765,7 +828,7 @@ function showCard(cardName) {
           pointHitRadius: 20,
           data: predictData.map((value, idx) => ({
             x: currLabels[dates.length - 1 + idx],
-            y: value + offset,
+            y: value,
           })),
           fill: false,
           borderColor: "rgba(83, 204, 255, 0.5)",
@@ -774,9 +837,70 @@ function showCard(cardName) {
           cubicInterpolationMode: "linear",
         },
         {
-          label: "Première Dose",
+          label: "Deuxième Dose",
           pointHitRadius: 20,
-          data: first_dose.slice(-5),
+          data: second_dose.slice(-5),
+          fill: true,
+          borderColor: "rgb(52, 226, 101)",
+          backgroundColor: getChartColor(chrt, 1).gradient,
+          tension: 0.1,
+        },
+      ];
+      annotations = [
+        {
+          type: "box",
+          borderWidth: 0,
+          xMin: 0,
+          xMax: dates.length - 1,
+          backgroundColor: "rgba(190, 250, 209, 0.2)",
+        },
+        {
+          type: "box",
+          borderWidth: 0,
+          xMin: dates.length - 1,
+          backgroundColor: "rgba(159, 223, 245, 0.1)",
+        },
+        {
+          type: "line",
+          label: {
+            content: "Aujourd'hui",
+            enabled: true,
+            position: "top",
+            xPadding: 15,
+          },
+          xMin: dates.length - 1,
+          xMax: dates.length - 1,
+          borderColor: "rgb(0, 0, 0)",
+          borderWidth: 2,
+        },
+      ];
+      break;
+    case "third-dose-estimation":
+      $("#card-full-title").text("Troisième dose estimation");
+      $("#card-full-descr").text(
+        `Prédiction du nombre cumulé de personnes ayant reçu au moins trois doses sur 4 mois. Cette estimation s'ajuste de jour en jour.`
+      );
+      currLabels = dates.concat(predictDates);
+      var predictData = getPrediction(third_dose);
+      datasets = [
+        {
+          parsing: false,
+          label: "Prediction",
+          pointHitRadius: 20,
+          data: predictData.map((value, idx) => ({
+            x: currLabels[dates.length - 1 + idx],
+            y: value,
+          })),
+          fill: false,
+          borderColor: "rgba(83, 204, 255, 0.5)",
+          tension: 0.2,
+          borderDash: [3, 2],
+          cubicInterpolationMode: "linear",
+        },
+        {
+          label: "Troisième Dose",
+          pointHitRadius: 20,
+          data: third_dose.slice(-5),
           fill: true,
           borderColor: "rgb(52, 226, 101)",
           backgroundColor: getChartColor(chrt, 1).gradient,
@@ -987,8 +1111,7 @@ function miniPredictChart(chrt, data, chrtLabels) {
     predictDates[i] = `${date.getDate()} ${monthsMin[date.getMonth()]}`;
   });
   var currLabels = dates.concat(predictDates);
-  var predictData = getPrediction(data.slice(-2), data.length + 1);
-  var offset = data[data.length - 1] - predictData[0];
+  var predictData = getPrediction(data);
   new Chart(chrt, {
     type: "line",
     data: {
@@ -999,7 +1122,7 @@ function miniPredictChart(chrt, data, chrtLabels) {
           pointHitRadius: 20,
           data: predictData.map((value, idx) => ({
             x: currLabels[dates.length - 1 + idx],
-            y: value + offset,
+            y: value,
           })),
           fill: true,
           borderColor: "rgba(83, 204, 255, 0.5)",
@@ -1071,14 +1194,16 @@ const getRegression = (data) => {
   return points_res;
 };
 
-const getPrediction = (data, count) => {
-  let dataRegression = [];
-  data.forEach((element, index) => dataRegression.push([index, element]));
-  var reg = regression.linear(dataRegression);
-  var result = [];
-  for (i = 0; i < count; i++) {
-    result.push(reg.predict(i)[1]);
+const getPrediction = (data) => {
+  data = data.slice(-3);
+  const factor = (data[data.length - 1] - data[0]) / (data.length * 5);
+  const result = [];
+  for (i = 5; i < 26 * 5; i += 5) {
+    var res = Math.floor(data[data.length - 1] + factor * i);
+    if (res > pop) result.push(pop);
+    else result.push(res);
   }
+  result.unshift(data[data.length - 1]);
   return result;
 };
 

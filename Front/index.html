@@ -33,6 +33,7 @@
             <div class="nav-container">
                 <i class="fas fa-arrow-left" id="close-btn" onclick="closeCard()" style="display: none;"></i>
                 <h1>F*ck Le Masque !</h1>
+				<a id="git" href="https://github.com/Marius-brt/Fuck-le-masque" target="_blank"><i class="fab fa-github"></i></a>
             </div>
         </div>
         <div class="panel" id="home" style="padding-top: 60px;">
@@ -44,29 +45,29 @@
                     <div class="grid">
                         <div class="case">
                             <div class="case-tooltip">
-                                <i class="fas fa-info-circle tooltip"><span>Pourcentage de la population vaccinée.</span></i>
+                                <i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins une dose.</span></i>
                             </div>
-                            <p>Population vaccinée</p>
-                            <h2 id="percent_vaccin"></h2>
-                            <div class="loading-bar" id="percent_vaccin_bar"></div>
+                            <p>Première dose</p>
+                            <h2 id="coll-first"></h2>
+                            <div class="loading-bar" id="coll-first-bar"></div>
                             <div class="marked"></div>
                         </div>
                         <div class="case">
                             <div class="case-tooltip">
-                                <i class="fas fa-info-circle tooltip"><span>Population à vacciner pour atteindre l'immunité collective (67% de la population immunisée selon l'institut Pasteur).</span></i>
+                                <i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins deux dose.</span></i>
                             </div>
-                            <p>Population à vacciner</p>
-                            <h2 id="pop-next-vaccine"></h2>
-                            <div class="loading-bar" id="pop-next-vaccine-bar"></div>
+                            <p>Deuxième dose</p>
+                            <h2 id="coll-second"></h2>
+                            <div class="loading-bar" id="coll-second-bar"></div>
                             <div class="marked"></div>
                         </div>
-                        <div class="case" id="coll-immunity-case">
+                        <div class="case">
                             <div class="case-tooltip">
-                                <i class="fas fa-info-circle tooltip"><span>Date estimée où l'on atteindra l'immunité collective (67% de la population immunisée selon l'institut Pasteur).</span></i>
+                                <i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins trois dose.</span></i>
                             </div>
-                            <p>Immunité collective estimée</p>
-                            <h2 id="coll-immunity"></h2>
-                            <div class="loading-bar" id="coll-immunity-bar"></div>
+                            <p>Troisième dose</p>
+                            <h2 id="coll-third"></h2>
+                            <div class="loading-bar" id="coll-third-bar"></div>
                             <div class="marked"></div>
                         </div>
                     </div>
@@ -77,54 +78,78 @@
                 </div>
                 <p id="info-text">(Cliquer sur les graphiques pour les voir en grand)</p>
                 <div class="grid" id="charts">
-                    <div class="card" onclick="showCard('vaccinated')">
-                        <i class="fas fa-syringe logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
-                        <div class="card-tooltip">
-                            <i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises.</span></i>
-                        </div>
-                        <p>Vaccinés</p>
-                        <h3 id="vaccins"></h3>
-                        <p id="vaccins_variation"></p>
-                        <div class="mini-chart">
-                            <canvas id="mini-vaccins"></canvas>
-                        </div>
-                    </div>
-                    <div class="card" onclick="showCard('first-dose')">
+					<div class="card" onclick="showCard('first-dose')">
                         <i class="fas fa-certificate logo" style="color: #34e265; background-color: #edfdf2;"></i>
-                        <p>Première dose</p>
+                        <p>Total première dose</p>
                         <div class="card-tooltip">
-                            <i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins une dose.</span></i>
+							<i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins une dose.</span></i>
                         </div>
                         <h3 id="first_dose"></h3>
                         <p id="first_dose_variation"></p>
                         <div class="mini-chart">
-                            <canvas id="mini-first-dose"></canvas>
+							<canvas id="mini-first-dose"></canvas>
                         </div>
-                    </div>                
-                    <div class="card" onclick="showCard('new-vaccinated')">
-                        <i class="fas fa-plus logo" style="color: #ff6032; background-color: #fff3ef;"></i>
-                        <p>Nouveaux Vaccinés</p>
+                    </div>  
+					<div class="card" onclick="showCard('new-first-dose')">
+                        <i class="fas fa-syringe logo" style="color: #34e265; background-color: #edfdf2;"></i>
+                        <p>Premières dose aujourd'hui</p>
                         <div class="card-tooltip">
-                            <i class="fas fa-info-circle tooltip"><span>Nombre de personnes ayant reçu toutes les doses de vaccin requises en 24h.</span></i>
-                        </div>
-                        <h3 id="new_vaccins"></h3>
-                        <p id="new_vaccins_variation"></p>
-                        <div class="mini-chart">
-                            <canvas id="mini-new-vaccins"></canvas>
-                        </div>
-                    </div>
-                    <div class="card" onclick="showCard('new-first-dose')">
-                        <i class="fas fa-bug logo" style="color: #53ccff; background-color: #f2fbff;"></i>
-                        <p>Nouvelles premières dose</p>
-                        <div class="card-tooltip">
-                            <i class="fas fa-info-circle tooltip"><span>Nombre de personnes ayant reçu au moins une dose en 24h.</span></i>
+                            <i class="fas fa-info-circle tooltip"><span>Nombre de personnes ayant reçu une dose en 24h.</span></i>
                         </div>
                         <h3 id="first_dose_today"></h3>
                         <p id="new_first_dose_variation"></p>
                         <div class="mini-chart">
                             <canvas id="mini-new-first-dose"></canvas>
                         </div>
-                    </div>  
+                    </div>               
+					<div class="card" onclick="showCard('second-dose')">
+						<i class="fas fa-certificate logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
+						<div class="card-tooltip">
+							<i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins deux doses.</span></i>
+						</div>
+						<p>Total deuxième dose</p>
+						<h3 id="second_dose"></h3>
+						<p id="second_dose_variation"></p>
+						<div class="mini-chart">
+							<canvas id="mini-second-dose"></canvas>
+						</div>
+					</div>
+                    <div class="card" onclick="showCard('new-second-dose')">
+                        <i class="fas fa-syringe logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
+                        <p>Deuxième dose aujourd'hui</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Nombre de personnes ayant reçu une deuxième dose en 24h.</span></i>
+                        </div>
+                        <h3 id="new_second_dose"></h3>
+                        <p id="new_second_dose_variation"></p>
+                        <div class="mini-chart">
+                            <canvas id="mini-new-second-dose"></canvas>
+                        </div>
+                    </div>      
+					<div class="card" onclick="showCard('third-dose')">
+						<i class="fas fa-certificate logo" style="color: #ff6032; background-color: #fff3ef;"></i>
+						<div class="card-tooltip">
+							<i class="fas fa-info-circle tooltip"><span>Nombre cumulé de personnes ayant reçu au moins trois doses.</span></i>
+						</div>
+						<p>Total troisième dose</p>
+						<h3 id="third_dose"></h3>
+						<p id="third_dose_variation"></p>
+						<div class="mini-chart">
+							<canvas id="mini-third-dose"></canvas>
+						</div>
+					</div>
+                    <div class="card" onclick="showCard('new-third-dose')">
+                        <i class="fas fa-syringe logo" style="color: #ff6032; background-color: #fff3ef;"></i>
+                        <p>Troisième dose aurjoud'hui</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Nombre de personnes ayant reçu une troisième dose en 24h.</span></i>
+                        </div>
+                        <h3 id="new_third_dose"></h3>
+                        <p id="new_third_dose_variation"></p>
+                        <div class="mini-chart">
+                            <canvas id="mini-new-third-dose"></canvas>
+                        </div>
+                    </div>                  
                     <div class="card" onclick="showCard('deliveries')">
                         <i class="fas fa-box logo" style="color: #fca7ff; background-color: #feecff;"></i>
                         <p>Livraisons</p>
@@ -149,19 +174,8 @@
                     </div>
                 </div>
                 <div class="grid" id="estimations" style="display: none;">
-                    <div class="card" onclick="showCard('vaccinated-estimation')">
-                        <i class="fas fa-syringe logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
-                        <p>Vaccinés estimation</p>
-                        <div class="card-tooltip">
-                            <i class="fas fa-info-circle tooltip"><span>Estimation du nombre cumulé de personnes ayant reçu toutes les doses de vaccin requises sur 4 mois. Cette estimation s'ajuste de jour en jour.</span></i>
-                        </div>
-                        <h3 id="vaccins-pred"></h3>
-                        <div class="mini-chart">
-                            <canvas id="mini-vaccins-estimation"></canvas>
-                        </div>
-                    </div>
                     <div class="card" onclick="showCard('first-dose-estimation')">
-                        <i class="fas fa-certificate logo" style="color: #34e265; background-color: #edfdf2;"></i>
+                        <i class="fas fa-chart-line logo" style="color: #34e265; background-color: #edfdf2;"></i>
                         <p>Première dose estimation</p>
                         <div class="card-tooltip">
                             <i class="fas fa-info-circle tooltip"><span>Estimation du nombre cumulé de personnes ayant reçu au moins une dose sur 4 mois. Cette estimation s'ajuste de jour en jour.</span></i>
@@ -170,27 +184,44 @@
                         <div class="mini-chart">
                             <canvas id="mini-first-dose-estimation"></canvas>
                         </div>
+                    </div>  
+					<div class="card" onclick="showCard('second-dose-estimation')">
+                        <i class="fas fa-chart-line logo" style="color: #689aeb; background-color: #e0ebfc;"></i>
+                        <p>Deuxième dose estimation</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Estimation du nombre cumulé de personnes ayant reçu au moins une deuxième dose sur 4 mois. Cette estimation s'ajuste de jour en jour.</span></i>
+                        </div>
+                        <h3 id="second-dose-pred"></h3>
+                        <div class="mini-chart">
+                            <canvas id="mini-second-dose-estimation"></canvas>
+                        </div>
+                    </div>  
+					<div class="card" onclick="showCard('third-dose-estimation')">
+                        <i class="fas fa-chart-line logo" style="color: #ff6032; background-color: #fff3ef;"></i>
+                        <p>Troisième dose estimation</p>
+                        <div class="card-tooltip">
+                            <i class="fas fa-info-circle tooltip"><span>Estimation du nombre cumulé de personnes ayant reçu au moins une troisième dose sur 4 mois. Cette estimation s'ajuste de jour en jour.</span></i>
+                        </div>
+                        <h3 id="third-dose-pred"></h3>
+                        <div class="mini-chart">
+                            <canvas id="mini-third-dose-estimation"></canvas>
+                        </div>
                     </div>   
                 </div>
-            </div>
-            <div class="banner">
-                <h2>Vous souhaitez vous faire vacciner ?</h2>
-                <p>À l'heure actuelle, toutes les personnes résidant en France ne sont pas éligibles à la vaccination. Cela finira par arriver mais pour l'heure si vous souhaitez vous faire vacciner, vous pouvez tester votre éligibilité en cliquant sur le bouton ci-dessous.</p>
-                <a class="link-btn" href="https://www.gouvernement.fr/info-coronavirus/vaccins?xtor=SEC-3-GOO-[]-[511245726430]-S-[%2B%C3%A9ligibilit%C3%A9%20%2Bvaccination]" target="_blank"><span>📝</span>Tester votre élegibilité</a>
             </div>
             <div class="horizontal">
                 <div class="events">
                     <h2 class="md-title">Événements liés à la vaccination</h2>
                     <div class="btn-group" style="margin-bottom: 40px;">
-                        <button class="active" id="next-events-btn" onclick="showNextEvents()">Prochainement</button>
-                        <button id="all-events-btn" onclick="showAllEvents()">Tous</button>
+                        <button id="next-events-btn" onclick="showNextEvents()">Prochainement</button>
+                        <button class="active" id="all-events-btn" onclick="showAllEvents()">Tous</button>
                     </div>
-                    <div class="grid" id="next-events"></div>
-                    <div class="grid" id="all-events" style="display: none;"></div>
+                    <div class="grid" id="next-events" style="display: none;"></div>
+                    <div class="grid" id="all-events"></div>
                 </div>            
             </div>
             <div class="banner">
-                <h2>Vous êtes éligible à la vaccination ?</h2>
+                <h2>Prendre rendez-vous</h2>
                 <p>Vite Ma Dose est un outil qui vous permet de trouver un rendez-vous de vaccination contre le Covid 19 au plus proche de chez vous et rapidement. Faciles et simples, nous vous recommandons Vite Ma Dose pour trouver votre rendez-vous de vaccination.</p>
                 <a href="https://vitemadose.covidtracker.fr/" target="_blank" class="link-btn"><img src="/assets/img/vite-ma-dose.webp" alt="vite-ma-dose-logo"> Vite Ma Dose</a>
             </div>
